@@ -1,0 +1,353 @@
+.landing-page {
+  min-height: 100vh;
+  background: radial-gradient(
+      circle at 70% 30%,
+      rgba(59, 130, 246, 0.12),
+      transparent 30%
+    ),
+    #080b12;
+  overflow: hidden;
+}
+
+
+
+/* NAVBAR */
+
+.landing-nav {
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 7%;
+
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.brand-icon {
+  font-size: 22px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-links a {
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 14px;
+
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+  color: #f8fafc;
+}
+
+.login-btn {
+  padding: 9px 18px;
+  color: #f8fafc;
+  background: transparent;
+  border: 1px solid #334155;
+  border-radius: 7px;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  border-color: #64748b;
+}
+
+
+
+/* HERO */
+
+.hero-section {
+  max-width: 1200px;
+  min-height: 620px;
+
+  margin: 0 auto;
+  padding: 90px 30px;
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 70px;
+  
+  align-items: center;
+}
+
+
+
+/* HERO CONTENT */
+
+.hero-content {
+  max-width: 600px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  padding: 7px 12px;
+  margin-bottom: 25px;
+  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  border-radius: 20px;
+  font-size: 12px;
+}
+
+.status-badge span {
+  color: #22c55e;
+}
+
+.hero-content h1 {
+  font-size: clamp(52px, 6vw, 78px);
+  line-height: 0.98;
+  letter-spacing: -3px;
+  margin-bottom: 28px;
+}
+
+.hero-content h1 span {
+  color: #60a5fa;
+}
+
+.hero-content p {
+  max-width: 540px;
+  color: #94a3b8;
+  font-size: 17px;
+  line-height: 1.7;
+  margin-bottom: 35px;
+}
+
+
+/* BUTTONS */
+
+.hero-actions {
+  display: flex;
+  gap: 14px;
+}
+
+.primary-btn, .secondary-btn {
+  padding: 13px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.primary-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  border: none;
+
+  background: #3b82f6;
+  color: white;
+}
+
+.primary-btn:hover {
+  transform: translateY(-2px);
+  background: #3563eb;
+}
+
+.secondary-btn {
+  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #334155;
+}
+
+.secondary-btn:hover {
+  border-color: #64748b;;
+}
+
+
+
+/* DASHBOARD PREVIEW */
+
+.hero-dashboard {
+  padding: 22px;
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(10px);
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.dashboard-label {
+  color: #64748b;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.dashboard-header h3 {
+  margin-top: 5px;
+  font-size: 18px;
+}
+
+.healthy-status {
+  color: #22c55e;
+  font-size: 12px;
+}
+
+
+
+/* CHART */
+
+.health-chart {
+  position: relative;
+  height: 180px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.chart-grid {
+  position: absolute;
+  inset: 0;
+
+  background-image: linear-gradient(
+      rgba(148, 163, 0.06) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      rgba(148, 163, 184, 0.06) 1px,
+      transparent 1px
+    );
+  
+  background-size: 40px 40px;
+}
+
+.chart-line {
+  position: absolute;
+  width: 80%;
+  height: 2px;
+  left: 10%;
+  top: 55%;
+  background: #3b82f6;
+  transform: rotate(-5deg);
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.7);
+}
+
+
+/* SERVICES */
+
+.service-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.service {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.025);
+  border-radius: 6px;
+  font-size: 12px;
+  color: #cbd5e1;
+}
+
+.service-status {
+  color: #22c55e;
+}
+
+.service-status.warning {
+  color: #f59e0b;
+}
+
+
+/* STATS */
+
+.hero-stats {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 25px 30px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.hero-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+
+.hero-stats strong {
+  font-size: 20px;
+}
+
+.hero-stats span {
+  color: #64748b;
+  font-size: 12px;
+}
+
+
+
+/* RESPONSIVE */
+
+@media (max-width: 850px) {
+
+  .nav-links a {
+    display: none;
+  }
+
+  .hero-section {
+    grid-template-columns: 1fr;
+
+    padding-top: 60px;
+  }
+
+  .hero-dashboard {
+    max-width: 600px;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .landing-nav {
+    padding: 0 20px;
+  }
+
+  .hero-section {
+    padding: 50px 20px;
+  }
+
+  .hero-content h1 {
+    font-size: 52px;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-stats {
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+}

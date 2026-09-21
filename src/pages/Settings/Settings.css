@@ -1,0 +1,242 @@
+.settings-layout {
+  min-height: 100vh;
+  background: #080b12;
+  color: #f8fafc;
+}
+
+.settings-main {
+  min-height: 100vh;
+  margin-left: 240px;
+  padding: 30px 35px;
+}
+
+.settings-topbar {
+  padding-bottom: 25px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.settings-eyebrow {
+  margin-bottom: 6px;
+  color: #475569;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.settings-topbar h1 {
+  font-size: 25px;
+}
+
+.settings-content {
+  padding-top: 30px;
+}
+
+.settings-intro,
+.settings-section {
+  background: #0b1120;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.settings-intro {
+  padding: 25px;
+}
+
+.section-label {
+  margin-bottom: 7px;
+  color: #475569;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+.settings-intro h2 {
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.settings-intro > p:last-child {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* Settings sections */
+
+.settings-section {
+  margin-top: 20px;
+  padding: 25px;
+}
+
+.settings-section-header {
+  padding-bottom: 18px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.settings-section-header h2 {
+  font-size: 17px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid #1e293b;
+}
+
+.settings-row:last-child {
+  border-bottom: none;
+}
+
+.settings-row h3 {
+  margin-bottom: 5px;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.settings-row p {
+  color: #64748b;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.setting-status {
+  flex-shrink: 0;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+}
+
+.setting-status.enabled {
+  background: #10251a;
+  border: 1px solid #14532d;
+  color: #22c55e;
+}
+
+/* Account */
+
+.account-info {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  padding-top: 20px;
+}
+
+.account-item {
+  padding: 16px;
+  background: #080b12;
+  border: 1px solid #1e293b;
+  border-radius: 7px;
+}
+
+.account-item span {
+  display: block;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.account-item strong {
+  color: #cbd5e1;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Responsive */
+
+@media (max-width: 1000px) {
+  .settings-main {
+    margin-left: 0;
+  }
+
+  .account-info {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .settings-main {
+    padding: 20px;
+  }
+
+  .settings-topbar h1 {
+    font-size: 20px;
+  }
+
+  .settings-intro,
+  .settings-section {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .settings-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .setting-status {
+    align-self: flex-start;
+  }
+}
+
+
+
+
+
+/* Functionality Added */
+
+.settings-project-name {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.settings-no-project {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 30px;
+  margin-top: 25px;
+  background: #0d111a;
+  border: 1px dashed #1e293b;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.settings-no-project-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin-bottom: 15px;
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  color: #64748b;
+}
+
+.settings-no-project h2 {
+  margin-bottom: 8px;
+  font-size: 16px;
+}
+
+.settings-no-project p {
+  margin-bottom: 18px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+.settings-no-project button {
+  padding: 9px 14px;
+  background: #f8fafc;
+  border: none;
+  border-radius: 6px;
+  color: #080b12;
+  font-size: 11px;
+}

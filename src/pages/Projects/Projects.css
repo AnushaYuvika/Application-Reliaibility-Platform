@@ -1,0 +1,241 @@
+.projects-layout {
+  min-height: 100vh;
+  background: #080b12;
+  color: #f8fafc;
+}
+
+.projects-main {
+  min-height: 100vh;
+  margin-left: 240px;
+  padding: 30px 35px;
+}
+
+.projects-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding-bottom: 25px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.projects-eyebrow {
+  color: #475569;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  margin-bottom: 6px;
+}
+
+.projects-topbar h1 {
+  font-size: 25px;
+}
+
+.create-project-btn {
+  padding: 9px 14px;
+
+  background: #2563eb;
+  border: none;
+  border-radius: 6px;
+
+  color: white;
+  font-size: 12px;
+}
+
+.create-project-btn:hover {
+  background: #1d4ed8;
+}
+
+.projects-content {
+  padding-top: 30px;
+}
+
+.projects-intro {
+  padding: 25px;
+
+  background: #0b1120;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.projects-intro h2 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.projects-intro p {
+  color: #64748b;
+  font-size: 13px;
+}
+
+
+/* Create Project File */
+
+.project-form-card {
+  max-width: 700px;
+
+  padding: 25px;
+
+  background: #0b1120;
+  border: 1px solid #1e293b;
+  border-radius: 10px;
+}
+
+.project-form-header {
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.project-form-header h2 {
+  font-size: 17px;
+}
+
+.project-form-header p {
+  margin-top: 7px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.project-form {
+  padding-top: 22px;
+}
+
+.project-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 18px;
+}
+
+.project-form-group label {
+  color: #cbd5e1;
+  font-size: 11px;
+}
+
+.project-form-group input,
+.project-form-group select {
+  width: 100%;
+  padding: 10px 12px;
+
+  background: #080b12;
+  border: 1px solid #1e293b;
+  border-radius: 6px;
+
+  color: #f8fafc;
+  font-size: 12px;
+  outline: none;
+}
+
+.project-form-group input::placeholder {
+  color: #475569;
+}
+
+.project-form-group input:focus,
+.project-form-group select:focus {
+  border-color: #3b82f6;
+}
+
+.project-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+
+  margin-top: 25px;
+  padding-top: 18px;
+
+  border-top: 1px solid #1e293b;
+}
+
+.cancel-project-btn,
+.create-project-submit {
+  padding: 9px 14px;
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.cancel-project-btn {
+  background: transparent;
+  border: 1px solid #1e293b;
+  color: #94a3b8;
+}
+
+.create-project-submit {
+  background: #2563eb;
+  border: 1px solid #2563eb;
+  color: white;
+}
+
+.cancel-project-btn:hover {
+  border-color: #334155;
+  color: #f8fafc;
+}
+
+.create-project-submit:hover {
+  background: #1d4ed8;
+}
+
+
+
+
+
+@media (max-width: 700px) {
+  .projects-main {
+    margin-left: 0;
+    padding: 20px;
+  }
+
+  .projects-topbar {
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .projects-topbar h1 {
+    font-size: 20px;
+  }
+
+  .projects-content {
+    padding-top: 20px;
+  }
+
+  .projects-intro {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 500px) {
+  .projects-topbar {
+    flex-direction: column;
+  }
+
+  .create-project-btn {
+    width: 100%;
+  }
+
+  .project-form-card {
+    padding: 20px;
+  }
+
+  .project-form-actions {
+    flex-direction: column;
+  }
+
+  .cancel-project-btn,
+  .create-project-submit {
+    width: 100%;
+  }
+}
+
+
+
+
+/* Functionality Added */
+
+.project-form-error {
+  padding: 10px 12px;
+  margin-bottom: 15px;
+  background: #2d1111;
+  border: 1px solid #7f1d1d;
+  border-radius: 6px;
+  color: #f87171;
+  font-size: 11px;
+}
