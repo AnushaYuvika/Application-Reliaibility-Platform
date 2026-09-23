@@ -1,65 +1,80 @@
+import { useNavigate } from 'react-router-dom';
 import './ResolvedIncidents.css';
 
-const ResolvedIncidents = () => {
+const ResolvedIncidents = ({ incidents }) => {
+
+  const navigate = useNavigate();
+
+  const resolvedIncidents = incidents.filter(
+    (incident) => incident.status === 'resolved'
+  );
+
   return (
     <section className="resolved-incidents">
+
       <div className="resolved-incidents-header">
+
         <div>
-          <p className="section-label">INCIDENT HISTORY</p>
-          <h2>Resolved Incidents</h2>
+          <p className="section-label">
+            RESOLVED INCIDENTS
+          </p>
+
+          <h2>Recently Resolved</h2>
         </div>
 
-        <span className="resolved-total">12 Resolved</span>
+        <span className="incident-total">
+          {resolvedIncidents.length} Resolved
+        </span>
+
       </div>
 
       <div className="resolved-incidents-list">
 
-        <div className="resolved-incident-row">
-          <div className="resolved-incident-main">
-            <span className="severity warning">Warning</span>
-
-            <div>
-              <h3>Authentication service timeout</h3>
-              <p>Auth Service · Resolved 2 hours ago</p>
-            </div>
+        {resolvedIncidents.length === 0 ? (
+          <div className="no-resolved-incidents">
+            <p>No resolved incidents for this project.</p>
           </div>
+        ) : (
+          resolvedIncidents.map((incident) => (
 
-          <span className="resolved-status">
-            Resolved
-          </span>
-        </div>
+            <div
+              className="resolved-incident-row"
+              key={incident.id}
+              onClick={() =>
+                navigate(`/incidents/${incident.id}`)
+              }
+            >
 
-        <div className="resolved-incident-row">
-          <div className="resolved-incident-main">
-            <span className="severity critical">Critical</span>
+              <div className="resolved-incident-main">
 
-            <div>
-              <h3>Payment gateway failure</h3>
-              <p>Payment Service · Resolved yesterday</p>
+                <span className="resolved-badge">
+                  Resolved
+                </span>
+
+                <div>
+                  <h3>{incident.title}</h3>
+
+                  <p>
+                    Resolved incident ·{' '}
+                    {new Date(
+                      incident.createdAt
+                    ).toLocaleString()}
+                  </p>
+                </div>
+
+              </div>
+
+              <span className="incident-status-text">
+                {incident.status}
+              </span>
+
             </div>
-          </div>
 
-          <span className="resolved-status">
-            Resolved
-          </span>
-        </div>
-
-        <div className="resolved-incident-row">
-          <div className="resolved-incident-main">
-            <span className="severity warning">Warning</span>
-
-            <div>
-              <h3>High memory usage detected</h3>
-              <p>Analytics Platform · Resolved 2 days ago</p>
-            </div>
-          </div>
-
-          <span className="resolved-status">
-            Resolved
-          </span>
-        </div>
+          ))
+        )}
 
       </div>
+
     </section>
   );
 };

@@ -1,39 +1,65 @@
+
 import './Recommendation.css';
 
-const Recommendation = () => {
+const Recommendation = ({ response }) => {
+  const recommendation =
+    response?.recommendation ||
+    'No recommendation available yet.';
+
+  const reason =
+    response?.recommendationReason ||
+    'The platform has not generated supporting analysis yet.';
+
   return (
     <section className="recommendation-section">
+
       <div className="recommendation-header">
+
         <div>
-          <p className="section-label">RECOMMENDATION</p>
-          <h2>Recommended Action</h2>
+          <p className="section-label">
+            RECOMMENDATION
+          </p>
+
+          <h2>
+            Recommended Action
+          </h2>
         </div>
 
         <span className="recommendation-badge">
-          High Confidence
+          {response ? 'Available' : 'Pending'}
         </span>
+
       </div>
 
       <div className="recommendation-content">
-        <h3>Optimize database connection handling</h3>
+
+        <h3>
+          {recommendation}
+        </h3>
 
         <p>
-          Review database connection pooling and increase the
-          connection pool capacity to reduce latency during high
-          request volumes.
+          {response
+            ? 'Review the recommended action before proceeding with remediation.'
+            : 'A response record has not been created for this incident yet.'}
         </p>
+
       </div>
 
       <div className="recommendation-reason">
-        <span>Why this action?</span>
+
+        <span>
+          Why this action?
+        </span>
 
         <p>
-          Database latency was identified as the strongest signal
-          correlated with the API response-time increase.
+          {reason}
         </p>
+
       </div>
+
     </section>
   );
 };
 
 export default Recommendation;
+

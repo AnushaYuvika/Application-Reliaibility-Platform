@@ -1,86 +1,106 @@
-import { useEffect, useState } from 'react';
 import './OverviewCards.css';
 
-const OverviewCard = () => {
+const OverviewCard = ({
+  projects,
+  incidents
+}) => {
 
-  const [projectCount, setProjectCount] = useState(0);
+  const activeIncidents = incidents.filter(
+    (incident) => incident.status === 'active'
+  );
 
-  useEffect(() => {
-    const updateProjectCount = () => {
-      const storedProjects =
-        JSON.parse(sessionStorage.getItem('projects')) || [];
-
-      setProjectCount(storedProjects.length);
-    };
-
-    updateProjectCount();
-
-    window.addEventListener(
-      'projectsUpdated',
-      updateProjectCount
-    );
-
-    return () => {
-      window.removeEventListener(
-        'projectsUpdated',
-        updateProjectCount
-      );
-    };
-  }, []);
-
+  const resolvedIncidents = incidents.filter(
+    (incident) => incident.status === 'resolved'
+  );
 
   return (
     <section className='overview-cards'>
 
+      {/* Active Incidents */}
+
       <div className='overview-card'>
+
         <div className='card-header'>
           <span>Active Incidents</span>
           <span className='card-icon'>!</span>
         </div>
 
-        <h2>3</h2>
+        <h2>
+          {activeIncidents.length}
+        </h2>
 
-        <p className='card-warning'>2 require attention</p>
+        <p className='card-warning'>
+          {activeIncidents.length > 0
+            ? `${activeIncidents.length} require attention`
+            : 'No active incidents'}
+        </p>
+
       </div>
 
+
+      {/* Projects */}
+
       <div className='overview-card'>
+
         <div className='card-header'>
           <span>Services</span>
           <span className='card-icon'>◉</span>
         </div>
 
-        <h3>{projectCount}</h3>
+        <h3>
+          {projects.length}
+        </h3>
+
         <p>Projects</p>
 
-        <p className='card-success'>All systems operational</p>
+        <p className='card-success'>
+          {projects.length > 0
+            ? 'Connected to backend'
+            : 'No projects'}
+        </p>
+
       </div>
 
+
+      {/* Deployment */}
+
       <div className='overview-card'>
+
         <div className='card-header'>
           <span>Deployment</span>
           <span className='card-icon'>↗</span>
         </div>
 
-        <h2>24</h2>
+        <h2>—</h2>
 
         <p>Last 7 days</p>
+
       </div>
 
 
+      {/* System Health */}
+
       <div className='overview-card'>
+
         <div className='card-header'>
           <span>System Health</span>
           <span className='card-icon'>♥</span>
         </div>
 
-        <h2>98.7%</h2>
+        <h2>
+          {resolvedIncidents.length > 0
+            ? 'Tracked'
+            : '—'}
+        </h2>
 
-        <p className='card-success'>+1.2% from last week</p>
+        <p className='card-success'>
+          Based on incident data
+        </p>
+
       </div>
 
     </section>
-  )
-}
+  );
+};
 
-export default OverviewCard
-
+export default OverviewCard;

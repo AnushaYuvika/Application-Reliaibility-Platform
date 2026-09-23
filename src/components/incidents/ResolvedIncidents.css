@@ -90,3 +90,10 @@
     margin-left: 77px;
   }
 }
+
+.no-resolved-incidents {
+  padding: 30px;
+  text-align: center;
+  color: #64748b;
+  font-size: 12px;
+}

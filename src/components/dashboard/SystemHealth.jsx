@@ -1,72 +1,149 @@
 import './SystemHealth.css';
 
-const SystemHealth = () => {
+const SystemHealth = ({ incidents }) => {
+
+  const activeIncidents = incidents.filter(
+    (incident) => incident.status === 'active'
+  );
+
+  const criticalIncidents = activeIncidents.filter(
+    (incident) => incident.severity === 'critical'
+  );
+
+  const isHealthy =
+    activeIncidents.length === 0;
+
   return (
     <section className="system-health">
 
       <div className="health-header">
+
         <div>
-          <p className="section-label">SYSTEM HEALTH</p>
-          <h2>Service Performance</h2>
+
+          <p className="section-label">
+            SYSTEM HEALTH
+          </p>
+
+          <h2>
+            Service Performance
+          </h2>
+
         </div>
 
         <span className="health-period">
-          Last 24 hours
+          Current status
         </span>
+
       </div>
+
 
       <div className="health-content">
 
         <div className="health-score">
+
           <div className="health-circle">
-            <span>98.7%</span>
+
+            <span>
+              {isHealthy ? 'OK' : '—'}
+            </span>
+
           </div>
 
           <div>
-            <h3>Healthy</h3>
+
+            <h3>
+              {isHealthy
+                ? 'Healthy'
+                : 'Attention Required'}
+            </h3>
+
             <p>
-              Overall system reliability
+              {isHealthy
+                ? 'No active incidents detected'
+                : `${activeIncidents.length} active incident${
+                    activeIncidents.length > 1
+                      ? 's'
+                      : ''
+                  } detected`}
             </p>
+
           </div>
+
         </div>
 
 
         <div className="service-status">
 
           <div className="service-row">
+
             <div>
+
               <span className="status-dot"></span>
-              API Gateway
+
+              Active Incidents
+
             </div>
 
-            <span>99.9%</span>
+            <span>
+              {activeIncidents.length}
+            </span>
+
           </div>
 
+
           <div className="service-row">
+
             <div>
+
               <span className="status-dot"></span>
-              Authentication
+
+              Critical Incidents
+
             </div>
 
-            <span>99.8%</span>
+            <span>
+              {criticalIncidents.length}
+            </span>
+
           </div>
 
+
           <div className="service-row">
+
             <div>
+
               <span className="status-dot"></span>
-              Database
+
+              Resolved Incidents
+
             </div>
 
-            <span>99.7%</span>
+            <span>
+              {
+                incidents.filter(
+                  (incident) =>
+                    incident.status === 'resolved'
+                ).length
+              }
+            </span>
+
           </div>
 
+
           <div className="service-row">
+
             <div>
+
               <span className="status-dot"></span>
-              Background Jobs
+
+              Monitoring
+
             </div>
 
-            <span>98.9%</span>
+            <span>
+              Connected
+            </span>
+
           </div>
 
         </div>

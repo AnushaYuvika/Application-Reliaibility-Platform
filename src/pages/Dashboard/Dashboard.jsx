@@ -4,24 +4,95 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import SystemHealth from '../../components/dashboard/SystemHealth';
 import './Dashboard.css';
 import { useEffect, useState } from 'react';
+import API_BASE_URL from '../../api/api';
 
 const Dashboard = () => {
-
   const [selectedProject, setSelectedProject] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [incidents, setIncidents] = useState([]);
 
   useEffect(() => {
-    const selectedProjectId =
-      sessionStorage.getItem('selectedProjectId');
+    const fetchDashboardData = async () => {
+      try {
+        const token = localStorage.getItem('token');
 
-    const projects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
+        const [projectsResponse, incidentsResponse] =
+          await Promise.all([
+            fetch(`${API_BASE_URL}/projects`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            }),
 
-    const project = projects.find(
-      (item) => item.id === Number(selectedProjectId)
-    );
+            fetch(`${API_BASE_URL}/incidents`, {
+              headers: {
+                Authorization: `Bearer ${token}`
+              }
+            })
+          ]);
 
-    setSelectedProject(project || null);
+        const projectsData =
+          await projectsResponse.json();
+
+        const incidentsData =
+          await incidentsResponse.json();
+
+        if (!projectsResponse.ok) {
+          console.error(
+            projectsData.message ||
+            'Failed to fetch projects.'
+          );
+          return;
+        }
+
+        if (!incidentsResponse.ok) {
+          console.error(
+            incidentsData.message ||
+            'Failed to fetch incidents.'
+          );
+          return;
+        }
+
+        setProjects(projectsData.projects || []);
+        setIncidents(incidentsData.incidents || []);
+
+        const selectedProjectId =
+          sessionStorage.getItem('selectedProjectId');
+
+        let project = null;
+
+        if (selectedProjectId) {
+          project = projectsData.projects.find(
+            (item) =>
+              String(item._id) ===
+              String(selectedProjectId)
+          );
+        }
+
+        if (!project && projectsData.projects.length > 0) {
+          project = projectsData.projects[0];
+
+          sessionStorage.setItem(
+            'selectedProjectId',
+            project._id
+          );
+        }
+
+        setSelectedProject(project || null);
+
+      } catch (error) {
+        console.error(
+          'Unable to connect to the server.'
+        );
+      }
+    };
+
+    fetchDashboardData();
   }, []);
+
+  const activeIncidents = incidents.filter(
+    (incident) => incident.status === 'active'
+  );
 
   return (
     <div className='dashboard-layout'>
@@ -31,8 +102,13 @@ const Dashboard = () => {
       <main className='dashboard-main'>
 
         <header className='dashboard-topbar'>
+
           <div>
-            <p className='dashboard-eyebrow'>OVERVIEW</p>
+
+            <p className='dashboard-eyebrow'>
+              OVERVIEW
+            </p>
+
             <h1>Dashboard</h1>
 
             {selectedProject && (
@@ -40,30 +116,55 @@ const Dashboard = () => {
                 Project: {selectedProject.name}
               </p>
             )}
+
           </div>
 
           <div className='system-status'>
+
             <span>●</span>
-            All systems operational
+
+            {activeIncidents.length === 0
+              ? 'All systems operational'
+              : `${activeIncidents.length} active incident${
+                  activeIncidents.length > 1 ? 's' : ''
+                }`}
+
           </div>
+
         </header>
 
         <section className='dashboard-content'>
+
           <div className='dashboard-welcome'>
+
             <h2>System Overview</h2>
-            <p>Monitor the health and reliability of your applications.</p>
+
+            <p>
+              Monitor the health and reliability of your
+              applications.
+            </p>
+
           </div>
 
-          <OverviewCard />
+          <OverviewCard
+            projects={projects}
+            incidents={incidents}
+          />
 
-          <SystemHealth />
+          <SystemHealth
+            incidents={incidents}
+          />
 
-          <IncidentActivity />
+          <IncidentActivity
+            incidents={incidents}
+          />
+
         </section>
 
       </main>
-    </div>
-  )
-}
 
-export default Dashboard
+    </div>
+  );
+};
+
+export default Dashboard;

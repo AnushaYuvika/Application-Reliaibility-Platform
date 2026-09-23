@@ -2,10 +2,13 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import './Projects.css';
 import { useState } from 'react';
+import API_BASE_URL from '../../api/api';
 
 const CreateProject = () => {
   const navigate = useNavigate();
+
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     name: '',
@@ -22,57 +25,63 @@ const CreateProject = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const existingProjects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
+    setError('');
 
+    const trimmedName = formData.name.trim();
+    const trimmedRepository = formData.repository.trim();
 
-    // 1. Duplicate name validation
-    const projectExists = existingProjects.some(
-      (project) =>
-        project.name.trim().toLowerCase() ===
-        formData.name.trim().toLowerCase()
-    );
-
-    if (projectExists) {
-      setError('A project with this name already exists.');
+    // 1. Project name validation
+    if (!trimmedName) {
+      setError('Project name is required.');
       return;
     }
-
 
     // 2. Repository URL validation
     const repositoryPattern =
       /^https?:\/\/(www\.)?(github\.com|gitlab\.com|bitbucket\.org)\/.+/i;
 
-    if (!repositoryPattern.test(formData.repository.trim())) {
+    if (!repositoryPattern.test(trimmedRepository)) {
       setError(
         'Please enter a valid GitHub, GitLab, or Bitbucket repository URL.'
       );
       return;
     }
 
+    try {
+      setLoading(true);
 
-    // 3. Create project
-    const newProject = {
-      id: Date.now(),
-      name: formData.name.trim(),
-      repository: formData.repository.trim(),
-      environment: formData.environment,
-    };
+      const token = localStorage.getItem('token');
 
-    const updatedProjects = [
-      ...existingProjects,
-      newProject,
-    ];
+      const response = await fetch(`${API_BASE_URL}/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: trimmedName,
+          repository: trimmedRepository,
+          environment: formData.environment,
+        }),
+      });
 
-    sessionStorage.setItem(
-      'projects',
-      JSON.stringify(updatedProjects)
-    );
+      const data = await response.json();
 
-    navigate('/projects');
+      if (!response.ok) {
+        setError(data.message || 'Failed to create project.');
+        return;
+      }
+
+      navigate('/projects');
+
+    } catch (error) {
+      setError('Unable to connect to the server.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -101,7 +110,6 @@ const CreateProject = () => {
 
         </header>
 
-
         <section className="projects-content">
 
           <div className="project-form-card">
@@ -114,8 +122,8 @@ const CreateProject = () => {
               </p>
             </div>
 
-
-            <form className="project-form" 
+            <form
+              className="project-form"
               onSubmit={handleSubmit}
             >
 
@@ -138,7 +146,6 @@ const CreateProject = () => {
                 />
               </div>
 
-
               <div className="project-form-group">
                 <label>Repository URL</label>
 
@@ -152,11 +159,11 @@ const CreateProject = () => {
                 />
               </div>
 
-
               <div className="project-form-group">
                 <label>Environment</label>
 
-                <select name="environment"
+                <select
+                  name="environment"
                   value={formData.environment}
                   onChange={handleChange}
                 >
@@ -165,7 +172,6 @@ const CreateProject = () => {
                   <option value="development">Development</option>
                 </select>
               </div>
-
 
               <div className="project-form-actions">
 
@@ -180,8 +186,9 @@ const CreateProject = () => {
                 <button
                   type="submit"
                   className="create-project-submit"
+                  disabled={loading}
                 >
-                  Create Project
+                  {loading ? 'Creating...' : 'Create Project'}
                 </button>
 
               </div>

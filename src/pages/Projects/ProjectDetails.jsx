@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ProjectDetails.css';
+import API_BASE_URL from '../../api/api';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -9,29 +10,54 @@ const ProjectDetails = () => {
   const [project, setProject] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     name: '',
     repository: '',
     environment: 'production',
   });
 
+  // Fetch project from backend
   useEffect(() => {
-    const storedProjects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
+    const fetchProject = async () => {
+      try {
+        const token = localStorage.getItem('token');
 
-    const selectedProject = storedProjects.find(
-      (item) => item.id === Number(id)
-    );
+        const response = await fetch(
+          `${API_BASE_URL}/projects/${id}`,
+          {
+            method: 'GET',
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
-    if (selectedProject) {
-      setProject(selectedProject);
+        const data = await response.json();
 
-      setFormData({
-        name: selectedProject.name,
-        repository: selectedProject.repository,
-        environment: selectedProject.environment,
-      });
-    }
+        if (!response.ok) {
+          setError(data.message || 'Failed to fetch project.');
+          return;
+        }
+
+        setProject(data.project);
+
+        setFormData({
+          name: data.project.name,
+          repository: data.project.repository,
+          environment: data.project.environment,
+        });
+
+      } catch (error) {
+        setError('Unable to connect to the server.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProject();
   }, [id]);
 
   const handleChange = (event) => {
@@ -43,53 +69,120 @@ const ProjectDetails = () => {
     }));
   };
 
-  const handleUpdate = (event) => {
+  // Update project
+  const handleUpdate = async (event) => {
     event.preventDefault();
 
-    const storedProjects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
+    setError('');
 
-    const updatedProjects = storedProjects.map((item) =>
-      item.id === Number(id)
-        ? {
-            ...item,
-            name: formData.name,
-            repository: formData.repository,
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(
+        `${API_BASE_URL}/projects/${id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            repository: formData.repository.trim(),
             environment: formData.environment,
-          }
-        : item
-    );
+          }),
+        }
+      );
 
-    sessionStorage.setItem(
-      'projects',
-      JSON.stringify(updatedProjects)
-    );
+      const data = await response.json();
 
-    setProject({
-      ...project,
-      name: formData.name,
-      repository: formData.repository,
-      environment: formData.environment,
-    });
+      if (!response.ok) {
+        setError(data.message || 'Failed to update project.');
+        return;
+      }
 
-    setIsEditing(false);
+      setProject(data.project);
+
+      setFormData({
+        name: data.project.name,
+        repository: data.project.repository,
+        environment: data.project.environment,
+      });
+
+      setIsEditing(false);
+
+    } catch (error) {
+      setError('Unable to connect to the server.');
+    }
   };
 
-  const handleDelete = () => {
-    const storedProjects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
-
-    const updatedProjects = storedProjects.filter(
-      (item) => item.id !== Number(id)
+  // Delete project
+  const handleDelete = async () => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete this project?'
     );
 
-    sessionStorage.setItem(
-      'projects',
-      JSON.stringify(updatedProjects)
-    );
+    if (!confirmDelete) {
+      return;
+    }
 
-    navigate('/projects');
+    try {
+      const token = localStorage.getItem('token');
+
+      const response = await fetch(
+        `${API_BASE_URL}/projects/${id}`,
+        {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Failed to delete project.');
+        return;
+      }
+
+      sessionStorage.removeItem('selectedProjectId');
+
+      navigate('/projects');
+
+    } catch (error) {
+      setError('Unable to connect to the server.');
+    }
   };
+
+  if (loading) {
+    return (
+      <main className="project-details-page">
+        <div className="project-details-container">
+          <h1>Loading Project...</h1>
+        </div>
+      </main>
+    );
+  }
+
+  if (error && !project) {
+    return (
+      <main className="project-details-page">
+        <div className="project-details-container">
+          <h1>Unable to Load Project</h1>
+
+          <p>{error}</p>
+
+          <button
+            className="back-project-btn"
+            onClick={() => navigate('/projects')}
+          >
+            Back to Projects
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   if (!project) {
     return (
@@ -133,8 +226,9 @@ const ProjectDetails = () => {
           </div>
 
           <div className="project-details-actions">
+
             <span className="project-details-status">
-              Operational
+              {project.status}
             </span>
 
             <button
@@ -142,7 +236,7 @@ const ProjectDetails = () => {
               onClick={() => {
                 sessionStorage.setItem(
                   'selectedProjectId',
-                  project.id
+                  project._id
                 );
 
                 navigate('/monitoring');
@@ -164,8 +258,15 @@ const ProjectDetails = () => {
             >
               Delete Project
             </button>
+
           </div>
         </header>
+
+        {error && (
+          <p className="project-form-error">
+            {error}
+          </p>
+        )}
 
         {isEditing && (
           <form
@@ -221,6 +322,7 @@ const ProjectDetails = () => {
             </div>
 
             <div className="project-edit-actions">
+
               <button
                 type="button"
                 onClick={() => setIsEditing(false)}
@@ -231,6 +333,7 @@ const ProjectDetails = () => {
               <button type="submit">
                 Save Changes
               </button>
+
             </div>
           </form>
         )}

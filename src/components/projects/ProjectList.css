@@ -110,6 +110,7 @@
   border: 1px dashed #1e293b;
   border-radius: 8px;
   text-align: center;
+  margin-top: 25px;
 }
 
 .project-empty-icon {
