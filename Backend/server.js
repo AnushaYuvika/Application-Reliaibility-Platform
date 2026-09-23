@@ -30,6 +30,7 @@ app.use(
 );
 
 connectDB();
+console.log("MongoDB URI exists:", !!process.env.MONGO_URI);
 
 app.use(express.json());
 
