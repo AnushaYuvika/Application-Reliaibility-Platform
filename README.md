@@ -1,250 +1,376 @@
 # Autonomous Software Reliability & Incident Response Platform
 
-> **Monitor. Investigate. Recover.**
+A full-stack software reliability platform designed to help development teams monitor applications, investigate production incidents, generate remediation recommendations, validate fixes, and maintain incident history.
 
-An autonomous software reliability platform designed to help development teams detect production incidents, investigate their root causes, recommend remediation actions, verify fixes, and maintain a clear incident history.
+## Overview
 
-## 🚧 Project Status
+Software failures in production often require developers to manually collect logs, inspect system behavior, identify the probable root cause, decide on remediation, and verify whether the issue has been resolved.
 
-**Status: In Development**
+This platform brings these activities into a single workflow.
 
-The project is being developed incrementally, starting with the frontend platform and workflow. Backend services, database integration, monitoring ingestion, AI-powered investigation, automated remediation, and verification workflows are being developed progressively.
+It combines monitoring data, incident investigation, response generation, human approval, verification, and reporting into one application.
 
-## 🎯 Problem
+## Problem Statement
 
-Production incidents often require developers to manually:
+When a production incident occurs, developers may need to:
 
-* Detect and identify failures
-* Search through logs
-* Investigate possible root causes
-* Determine the impact
-* Decide how to fix the issue
-* Validate whether the fix actually worked
-* Document the incident
+* Search through application logs
+* Identify relevant evidence
+* Understand the probable root cause
+* Determine the impact of the incident
+* Decide how to remediate the issue
+* Validate whether the remediation worked
+* Maintain a record of what happened
 
-This process can be time-consuming and difficult to track consistently.
+These steps can become fragmented across multiple tools and manual processes.
 
-## 💡 Solution
+## Solution
 
-The platform aims to provide a centralized workflow for software incident response:
+The platform provides a structured incident-response workflow:
 
 ```text
-Monitor
-   ↓
-Detect
-   ↓
-Investigate
-   ↓
-Respond
-   ↓
-Verify
-   ↓
-Report
+Application Monitoring
+        ↓
+Incident
+        ↓
+Investigation
+        ↓
+Root Cause Analysis
+        ↓
+Response Generation
+        ↓
+Human Approval
+        ↓
+Verification
+        ↓
+Incident Report
 ```
 
-The system is designed to collect incident evidence, analyze failures, suggest remediation actions, validate proposed fixes, and keep developers involved in the final approval process.
+The system is designed around a human-in-the-loop approach. Automated analysis can prepare investigation findings and remediation recommendations, while the final remediation decision remains with the developer.
 
-## ✨ Planned Features
+## Key Features
 
-* Project management
-* Application monitoring
-* Log analysis
-* Metrics monitoring
-* Deployment tracking
-* Incident detection and tracking
-* Evidence collection
-* Root-cause analysis
+### Authentication
+
+* JWT-based authentication
+* Protected API routes
+* Developer/Admin roles
+* Secure password hashing with bcrypt
+
+### Project Management
+
+* Create projects
+* Edit project information
+* Delete projects
+* Repository configuration
+* Environment management
+* Project status tracking
+
+### Monitoring
+
+The monitoring section supports:
+
+* Application logs
+* System metrics
+* Deployment activity
+
+Monitoring data is associated with individual projects.
+
+### Incident Management
+
+* Create and track incidents
+* Incident severity
+* Incident status
+* Incident timestamps
+* Project-specific incidents
+* Active and resolved incident tracking
+
+### Autonomous Investigation
+
+The investigation workflow analyzes available incident data and monitoring logs to produce:
+
+* Evidence
+* Probable root cause
 * Impact analysis
-* AI-assisted remediation recommendations
-* Remediation workflow
-* Fix verification
-* Incident reports
-* Project-specific configuration
-* Human approval before applying fixes
+* Confidence information
 
-## 🖥️ Current Frontend
+This allows the platform to move from a raw incident toward a structured investigation.
 
-The frontend currently includes:
+### Response Generation
 
-* Landing page
-* Login flow
-* Protected routes
-* Dashboard
-* Project creation and management
-* Project details
-* Project selection/context
-* Monitoring interface
-* Logs / Metrics / Deployments sections
-* Active and resolved incidents
-* Investigation workflow
-* Response workflow
-* Verification page
-* Reports
-* Settings
-* Responsive UI
+Based on investigation findings, the platform generates:
 
-Project information and frontend workflow state are currently being handled during development, with backend persistence planned as the next stage.
+* Recommended action
+* Supporting reasoning
+* Proposed remediation steps
 
-## 🏗️ Architecture
+The developer can review the generated response before approval.
+
+### Human Approval
+
+The remediation process remains human-controlled.
+
+A developer can:
+
+* Approve the response
+* Reject the response
+* Review the recommendation before proceeding
+
+### Verification
+
+After approval, the platform provides a verification stage to validate whether the proposed remediation resolves the incident condition.
+
+Verification records include:
+
+* Test name
+* Test description
+* Result
+* Output
+* Verification status
+* Verification timestamp
+
+### Reports
+
+The Reports section provides an overview of:
+
+* Project information
+* Incident history
+* Incident status
+* Reliability information
+* Generated incident reports
+
+## Technology Stack
 
 ### Frontend
 
 * React
 * React Router
 * JavaScript
+* HTML
 * CSS
 * Vite
 
-### Backend — Planned
+### Backend
 
 * Node.js
 * Express.js
-* MongoDB
 * REST APIs
+* JWT Authentication
+* bcrypt
 
-### AI & Automation — Planned
+### Database
 
-* Incident analysis
-* Root-cause assistance
-* Remediation recommendations
-* Automated validation
-* Developer approval workflow
+* MongoDB
+* Mongoose
+* MongoDB Atlas
 
-## 📁 Project Structure
-
-```text
-src/
-├── components/
-│   ├── dashboard/
-│   ├── projects/
-│   ├── monitoring/
-│   ├── incidents/
-│   ├── investigation/
-│   └── response/
-│
-├── pages/
-│   ├── Landing/
-│   ├── Login/
-│   ├── Dashboard/
-│   ├── Projects/
-│   ├── Monitoring/
-│   ├── Incidents/
-│   ├── Investigation/
-│   ├── Response/
-│   ├── Verification/
-│   ├── Reports/
-│   └── Settings/
-│
-├── App.jsx
-├── main.jsx
-└── index.css
-```
-
-## 🔄 Development Roadmap
-
-### Phase 1 — Frontend Foundation
-
-* [x] Project setup
-* [x] Routing
-* [x] Landing page
-* [x] Login
-* [x] Protected routes
-* [x] Dashboard
-* [x] Project management
-* [x] Monitoring UI
-* [x] Incident UI
-* [x] Investigation UI
-* [x] Response UI
-* [x] Verification UI
-* [x] Reports UI
-* [x] Settings UI
-* [x] Responsive design
-
-### Phase 2 — Frontend Functionality
-
-* [x] Project creation
-* [x] Project editing
-* [x] Project deletion
-* [x] Project selection
-* [x] Project-aware dashboard
-* [x] Project-aware monitoring
-* [x] Project-aware incident workflow
-* [x] Project-aware investigation
-* [x] Project-aware response
-* [x] Project-aware verification
-* [x] Project-aware reports
-* [x] Project-aware settings
-* [ ] Dynamic incident data
-* [ ] Dynamic monitoring data
-
-### Phase 3 — Backend
-
-* [ ] Express server
-* [ ] MongoDB integration
-* [ ] Project APIs
-* [ ] Incident APIs
-* [ ] Monitoring APIs
-* [ ] Authentication
-* [ ] Database models
-
-### Phase 4 — Reliability & AI
-
-* [ ] Log ingestion
-* [ ] Incident detection
-* [ ] Root-cause analysis
-* [ ] Evidence analysis
-* [ ] AI remediation recommendations
-* [ ] Automated verification
-* [ ] Incident history
-
-### Phase 5 — Production Workflow
-
-* [ ] Git repository integration
-* [ ] Automated test execution
-* [ ] Fix validation
-* [ ] Pull request generation
-* [ ] Developer approval workflow
-* [ ] Reporting and analytics
-
-## 🔐 Human-in-the-Loop
-
-The platform is designed around a **human approval workflow**.
-
-AI and automation can analyze incidents, recommend solutions, and validate proposed fixes, but the final action remains under developer control.
+## Architecture
 
 ```text
-Incident
-   ↓
-Investigation
-   ↓
-AI Recommendation
-   ↓
-Developer Review
-   ↓
-Remediation
-   ↓
-Verification
+                React Frontend
+                      │
+                      │ REST API
+                      ↓
+                Express.js API
+                      │
+             ┌────────┴────────┐
+             │                 │
+        JWT Authentication   Controllers
+                               │
+                               ↓
+                          Mongoose Models
+                               │
+                               ↓
+                           MongoDB
 ```
 
-## 📌 Why This Project?
+## Incident Response Architecture
 
-Instead of treating an AI assistant as a place where developers manually paste errors and ask for solutions, this platform is designed around the **complete incident lifecycle**.
+```text
+                    Project
+                       │
+                       ↓
+                  Monitoring
+               ┌──────┼──────┐
+               ↓      ↓      ↓
+             Logs   Metrics  Deployments
+               │
+               ↓
+            Incident
+               │
+               ↓
+         Investigation
+          ┌────┼────┐
+          ↓    ↓    ↓
+       Evidence Root  Impact
+                 Cause
+                  │
+                  ↓
+             Response
+          ┌───────┴────────┐
+          ↓                ↓
+   Recommendation      Remediation
+          │                │
+          └───────┬────────┘
+                  ↓
+            Human Approval
+                  │
+                  ↓
+             Verification
+                  │
+                  ↓
+                Report
+```
 
-It focuses on:
+## Project Structure
 
-* Continuous incident context
-* Evidence and history
-* Project-specific monitoring
-* Structured investigation
-* Remediation workflow
-* Verification
-* Human approval
-* Incident reporting
+```text
+autonomous-software-reliability-platform/
+│
+├── Backend/
+│   ├── controllers/
+│   ├── middleware/
+│   ├── models/
+│   ├── routes/
+│   ├── db.js
+│   ├── server.js
+│   └── .env
+│
+├── Frontend/
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── App.jsx
+│   └── ...
+│
+├── .gitignore
+└── README.md
+```
 
-## 🚀 Future Goal
+## Main Application Workflow
 
-The long-term goal is to evolve the platform into an autonomous software reliability system that can continuously monitor applications, investigate incidents, propose and validate fixes, and assist developers throughout the production incident lifecycle.
+### 1. Login
 
----
+The developer authenticates using the application.
 
-**Project Status:** 🚧 Actively Under Development
+### 2. Create or Select Project
+
+A project is configured with its repository and environment.
+
+### 3. Monitor Application
+
+The platform displays available logs, metrics, and deployment information for the selected project.
+
+### 4. Investigate Incident
+
+When an incident is available, the investigation stage analyzes the available monitoring evidence.
+
+### 5. Generate Response
+
+The platform prepares a recommendation and proposed remediation based on the investigation findings.
+
+### 6. Human Approval
+
+The developer reviews the proposed response and decides whether it should proceed.
+
+### 7. Verify
+
+The approved remediation is validated through the verification workflow.
+
+### 8. Report
+
+The incident and its lifecycle can be reviewed through the reporting section.
+
+## Local Setup
+
+### Prerequisites
+
+Make sure the following are installed:
+
+* Node.js
+* npm
+* MongoDB Atlas account
+* Git
+
+### Clone Repository
+
+```bash
+git clone https://github.com/AnushaYuvika/Application-Reliaibility-Platform.git
+```
+
+### Backend Setup
+
+```bash
+cd Backend
+npm install
+```
+
+Create a `.env` file inside the Backend folder:
+
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+```
+
+Start the backend:
+
+```bash
+npm start
+```
+
+The backend runs on:
+
+```text
+http://localhost:5000
+```
+
+### Frontend Setup
+
+Open another terminal:
+
+```bash
+cd Frontend
+npm install
+npm run dev
+```
+
+The frontend runs on the Vite development server.
+
+## Security
+
+Sensitive configuration values such as:
+
+* MongoDB credentials
+* JWT secrets
+* Environment variables
+
+are stored in `.env` and excluded from Git using `.gitignore`.
+
+## Future Enhancements
+
+The current application provides the core incident-response workflow. Future versions can extend the platform with:
+
+* Real-time log ingestion
+* Application monitoring agents
+* Webhook integrations
+* GitHub/GitLab integration
+* CI/CD integration
+* Real-time incident detection
+* Advanced AI-based root-cause analysis
+* Automated test execution
+* Pull Request generation
+* Production deployment integrations
+* Notification and alerting systems
+* Advanced reliability metrics such as MTTR and uptime
+
+## Current MVP
+
+The current MVP demonstrates the complete workflow from project monitoring to incident investigation, response generation, human approval, verification, and reporting.
+
+The architecture is designed so that external monitoring, logging, deployment, and repository systems can be integrated in future versions.
+
+## Author
+
+**Anusha Yuvika**
