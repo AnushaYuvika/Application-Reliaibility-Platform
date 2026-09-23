@@ -1,3 +1,12 @@
+## Demo Credentials
+
+**Email:** developer@example.com  
+**Password:** developer123
+
+**Live Demo:**  
+https://application-reliaibility-platform.vercel.app
+
+
 # Autonomous Software Reliability & Incident Response Platform
 
 A full-stack software reliability platform designed to help development teams monitor applications, investigate production incidents, generate remediation recommendations, validate fixes, and maintain incident history.
