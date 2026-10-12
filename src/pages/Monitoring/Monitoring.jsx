@@ -6,6 +6,8 @@ import MetricsOverview from '../../components/monitoring/MetricsOverview';
 import './Monitoring.css';
 import { useEffect, useState } from 'react';
 import API_BASE_URL from '../../api/api';
+import { selectProject } from '../../utils/selectedProject';
+
 
 const Monitoring = () => {
 
@@ -59,11 +61,7 @@ const Monitoring = () => {
 
         if (!project && data.projects.length > 0) {
           project = data.projects[0];
-
-          sessionStorage.setItem(
-            'selectedProjectId',
-            project._id
-          );
+          selectProject(project._id);
         }
 
         setSelectedProject(project || null);
@@ -95,12 +93,7 @@ const Monitoring = () => {
     }
 
     setSelectedProject(project);
-
-    sessionStorage.setItem(
-      'selectedProjectId',
-      project._id
-    );
-
+    selectProject(project._id);
   };
 
   return (

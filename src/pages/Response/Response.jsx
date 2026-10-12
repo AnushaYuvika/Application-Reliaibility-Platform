@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/dashboard/Sidebar';
 import Recommendation from '../../components/response/Recommendation';
 import Remediation from '../../components/response/Remediation';
+import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 import './Response.css';
-
-import API_BASE_URL from '../../api/api';
 
 const Response = () => {
   const navigate = useNavigate();
@@ -29,144 +29,89 @@ const Response = () => {
       setError('');
 
       const token = localStorage.getItem('token');
+      const projectId = sessionStorage.getItem('selectedProjectId');
+      const incidentId = sessionStorage.getItem('selectedIncidentId');
 
-      const projectId =
-        sessionStorage.getItem('selectedProjectId');
-
-      const incidentId =
-        sessionStorage.getItem('selectedIncidentId');
-
-      if (!projectId || !incidentId) {
-        setLoading(false);
+      if (!projectId) {
+        setSelectedProject(null);
+        setSelectedIncident(null);
         return;
       }
 
-      // Fetch project
       const projectResponse = await fetch(
         `${API_BASE_URL}/projects/${projectId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       const projectData = await projectResponse.json();
 
       if (!projectResponse.ok) {
-        setError(
-          projectData.message ||
-            'Failed to fetch project.'
-        );
+        setError(projectData.message || 'Failed to fetch project.');
+        return;
+      }
+      setSelectedProject(projectData.project);
+
+      if (!incidentId) {
+        setSelectedIncident(null);
         return;
       }
 
-      setSelectedProject(projectData.project);
-
-      // Fetch incident
-      const incidentResponse = await fetch(
+      const incidentResponse = await apiFetch(
         `${API_BASE_URL}/incidents/${incidentId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
       const incidentData = await incidentResponse.json();
 
       if (!incidentResponse.ok) {
-        setError(
-          incidentData.message ||
-            'Failed to fetch incident.'
-        );
+        setError(incidentData.message || 'Failed to fetch incident.');
         return;
       }
 
+      const incidentProjectId =
+        incidentData.incident.project?._id || incidentData.incident.project;
+
+      if (String(incidentProjectId) !== String(projectId)) {
+        sessionStorage.removeItem('selectedIncidentId');
+        setSelectedIncident(null);
+        return;
+      }
       setSelectedIncident(incidentData.incident);
 
-      // Fetch investigations
-      const investigationResponse = await fetch(
+      const investigationResponse = await apiFetch(
         `${API_BASE_URL}/investigations`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      const investigationData =
-        await investigationResponse.json();
+      const investigationData = await investigationResponse.json();
 
       if (!investigationResponse.ok) {
-        setError(
-          investigationData.message ||
-            'Failed to fetch investigation.'
-        );
+        setError(investigationData.message || 'Failed to fetch investigation.');
         return;
       }
 
-      const matchingInvestigation =
-        investigationData.investigations.find(
-          (item) => {
-            const itemIncidentId =
-              item.incident?._id ||
-              item.incident;
-
-            return (
-              String(itemIncidentId) ===
-              String(incidentId)
-            );
-          }
-        );
-
-      setInvestigation(
-        matchingInvestigation || null
+      const matchingInvestigation = investigationData.investigations.find(
+        (item) =>
+          String(item.incident?._id || item.incident) === String(incidentId)
       );
+      setInvestigation(matchingInvestigation || null);
 
-      // Fetch responses
-      const responseResponse = await fetch(
+      const responseResponse = await apiFetch(
         `${API_BASE_URL}/responses`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      const responseData =
-        await responseResponse.json();
+      const responseData = await responseResponse.json();
 
       if (!responseResponse.ok) {
-        setError(
-          responseData.message ||
-            'Failed to fetch response.'
-        );
+        setError(responseData.message || 'Failed to fetch response.');
         return;
       }
 
-      const matchingResponse =
-        responseData.responses.find(
-          (item) => {
-            const itemIncidentId =
-              item.incident?._id ||
-              item.incident;
-
-            return (
-              String(itemIncidentId) ===
-              String(incidentId)
-            );
-          }
-        );
-
-      setResponse(
-        matchingResponse || null
+      const matchingResponse = responseData.responses.find(
+        (item) =>
+          String(item.incident?._id || item.incident) === String(incidentId)
       );
+      setResponse(matchingResponse || null);
 
     } catch (error) {
-      setError(
-        'Unable to connect to the server.'
-      );
+      setError('Unable to connect to the server.');
     } finally {
       setLoading(false);
     }
@@ -208,14 +153,14 @@ const Response = () => {
           `Review and correct the underlying issue identified during investigation.`,
           `Validate the affected service and its configuration using the collected evidence.`,
           `Monitor the system after remediation to confirm that the incident condition no longer occurs.`
-        ];
+        ].join('\n');
 
       let responseData;
 
       // Existing response → update it
       if (response?._id) {
 
-        const updateResponse = await fetch(
+        const updateResponse = await apiFetch(
           `${API_BASE_URL}/responses/${response._id}`,
           {
             method: 'PUT',
@@ -249,7 +194,7 @@ const Response = () => {
       } else {
 
         // No response exists → create one
-        const createResponse = await fetch(
+        const createResponse = await apiFetch(
           `${API_BASE_URL}/responses`,
           {
             method: 'POST',
@@ -307,7 +252,7 @@ const Response = () => {
 
       const token = localStorage.getItem('token');
 
-      const responseUpdate = await fetch(
+      const responseUpdate = await apiFetch(
         `${API_BASE_URL}/responses/${response._id}`,
         {
           method: 'PUT',

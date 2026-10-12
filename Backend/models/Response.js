@@ -26,6 +26,12 @@ const responseSchema = new mongoose.Schema(
       trim: true
     },
 
+    recommendationReason: {
+      type: String,
+      default: "",
+      trim: true
+    },
+    
     approvalStatus: {
       type: String,
       enum: ["pending", "approved", "rejected"],

@@ -8,7 +8,8 @@ const createResponse = async (req, res) => {
       incident,
       investigation,
       recommendation,
-      remediation
+      remediation,
+      recommendationReason
     } = req.body;
 
     if (
@@ -54,7 +55,8 @@ const createResponse = async (req, res) => {
       incident,
       investigation,
       recommendation: recommendation.trim(),
-      remediation: remediation.trim()
+      remediation: remediation.trim(),
+      recommendationReason: recommendationReason || ""
     });
 
     res.status(201).json({
@@ -130,6 +132,7 @@ const updateResponse = async (req, res) => {
     const {
       recommendation,
       remediation,
+      recommendationReason,
       approvalStatus,
       approvedBy,
       status
@@ -151,6 +154,10 @@ const updateResponse = async (req, res) => {
       response.remediation = remediation.trim();
     }
 
+    if (recommendationReason !== undefined) {
+      response.recommendationReason = recommendationReason.trim();
+    }
+
     if (approvalStatus !== undefined) {
       response.approvalStatus = approvalStatus;
 
@@ -162,7 +169,7 @@ const updateResponse = async (req, res) => {
     }
 
     if (approvedBy !== undefined) {
-      response.approvedBy = approvedBy.trim();
+      response.approvedBy = approvedBy ? approvedBy.trim() : null;
     }
 
     if (status !== undefined) {

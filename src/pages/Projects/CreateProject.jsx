@@ -3,6 +3,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import './Projects.css';
 import { useState } from 'react';
 import API_BASE_URL from '../../api/api';
+import { selectProject } from '../../utils/selectedProject';
 
 const CreateProject = () => {
   const navigate = useNavigate();
@@ -74,6 +75,8 @@ const CreateProject = () => {
         setError(data.message || 'Failed to create project.');
         return;
       }
+
+      selectProject(data.project._id);
 
       navigate('/projects');
 

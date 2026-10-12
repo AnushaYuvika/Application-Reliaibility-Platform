@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import './ProjectDetails.css';
 import API_BASE_URL from '../../api/api';
+import { selectProject } from '../../utils/selectedProject';
 
 const ProjectDetails = () => {
   const { id } = useParams();
@@ -43,6 +44,7 @@ const ProjectDetails = () => {
         }
 
         setProject(data.project);
+        selectProject(data.project._id);
 
         setFormData({
           name: data.project.name,
@@ -147,6 +149,7 @@ const ProjectDetails = () => {
       }
 
       sessionStorage.removeItem('selectedProjectId');
+      sessionStorage.removeItem('selectedIncidentId');
 
       navigate('/projects');
 
@@ -234,11 +237,7 @@ const ProjectDetails = () => {
             <button
               className="monitor-project-btn"
               onClick={() => {
-                sessionStorage.setItem(
-                  'selectedProjectId',
-                  project._id
-                );
-
+                selectProject(project._id);
                 navigate('/monitoring');
               }}
             >

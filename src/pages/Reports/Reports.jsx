@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import './Reports.css';
 
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const Reports = () => {
 
@@ -62,7 +63,7 @@ const Reports = () => {
         );
 
         // Fetch incidents
-        const incidentsResponse = await fetch(
+        const incidentsResponse = await apiFetch(
           `${API_BASE_URL}/incidents`,
           {
             method: 'GET',

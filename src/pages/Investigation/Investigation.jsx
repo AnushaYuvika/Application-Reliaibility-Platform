@@ -7,207 +7,170 @@ import './Investigation.css';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const Investigation = () => {
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const [selectedProject, setSelectedProject] = useState(null);
-const [selectedIncident, setSelectedIncident] = useState(null);
-const [investigation, setInvestigation] = useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [selectedIncident, setSelectedIncident] = useState(null);
+  const [investigation, setInvestigation] = useState(null);
 
-const [loading, setLoading] = useState(true);
-const [analyzing, setAnalyzing] = useState(false);
-const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [error, setError] = useState('');
 
-const fetchInvestigationData = async () => {
-try {
-setLoading(true);
-setError('');
+  const fetchInvestigationData = async () => {
+    try {
+      setLoading(true);
+      setError('');
 
+      const token = localStorage.getItem('token');
+      const projectId = sessionStorage.getItem('selectedProjectId');
+      const incidentId = sessionStorage.getItem('selectedIncidentId');
 
-  const token = localStorage.getItem('token');
-
-  const projectId =
-    sessionStorage.getItem('selectedProjectId');
-
-  const incidentId =
-    sessionStorage.getItem('selectedIncidentId');
-
-  if (!projectId || !incidentId) {
-    setLoading(false);
-    return;
-  }
-
-  // Fetch project
-  const projectResponse = await fetch(
-    `${API_BASE_URL}/projects/${projectId}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`
+      // No project -> page shows "No project selected"
+      if (!projectId) {
+        setSelectedProject(null);
+        setSelectedIncident(null);
+        return;
       }
-    }
-  );
 
-  const projectData = await projectResponse.json();
+      // 1. Project
+      const projectResponse = await fetch(
+        `${API_BASE_URL}/projects/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const projectData = await projectResponse.json();
 
-  if (!projectResponse.ok) {
-    setError(
-      projectData.message ||
-        'Failed to fetch project.'
-    );
-    return;
-  }
-
-  setSelectedProject(projectData.project);
-
-  // Fetch incident
-  const incidentResponse = await fetch(
-    `${API_BASE_URL}/incidents/${incidentId}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`
+      if (!projectResponse.ok) {
+        setError(projectData.message || 'Failed to fetch project.');
+        return;
       }
-    }
-  );
+      setSelectedProject(projectData.project);
 
-  const incidentData = await incidentResponse.json();
-
-  if (!incidentResponse.ok) {
-    setError(
-      incidentData.message ||
-        'Failed to fetch incident.'
-    );
-    return;
-  }
-
-  setSelectedIncident(incidentData.incident);
-
-  // Fetch investigations
-  const investigationResponse = await fetch(
-    `${API_BASE_URL}/investigations`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`
+      // Project exists but no incident -> page shows "No incident selected"
+      if (!incidentId) {
+        setSelectedIncident(null);
+        return;
       }
+
+      // 2. Incident
+      const incidentResponse = await apiFetch(
+        `${API_BASE_URL}/incidents/${incidentId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const incidentData = await incidentResponse.json();
+
+      if (!incidentResponse.ok) {
+        setError(incidentData.message || 'Failed to fetch incident.');
+        return;
+      }
+
+      // Incident must belong to the selected project
+      const incidentProjectId =
+        incidentData.incident.project?._id || incidentData.incident.project;
+
+      if (String(incidentProjectId) !== String(projectId)) {
+        sessionStorage.removeItem('selectedIncidentId');
+        setSelectedIncident(null);
+        return;
+      }
+      setSelectedIncident(incidentData.incident);
+
+      // 3. Investigation
+      const investigationResponse = await apiFetch(
+        `${API_BASE_URL}/investigations`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const investigationData = await investigationResponse.json();
+
+      if (!investigationResponse.ok) {
+        setError(investigationData.message || 'Failed to fetch investigation.');
+        return;
+      }
+
+      const matching = investigationData.investigations.find((item) => {
+        const id = item.incident?._id || item.incident;
+        return String(id) === String(incidentId);
+      });
+      setInvestigation(matching || null);
+
+    } catch (error) {
+      setError('Unable to connect to the server.');
+    } finally {
+      setLoading(false);
     }
-  );
+  };
 
-  const investigationData =
-    await investigationResponse.json();
 
-  if (!investigationResponse.ok) {
-    setError(
-      investigationData.message ||
-        'Failed to fetch investigation.'
-    );
-    return;
+  useEffect(() => {
+  fetchInvestigationData();
+  }, []);
+
+  // Run autonomous incident analysis
+  const handleAnalyzeIncident = async () => {
+  if (!selectedIncident) {
+  return;
   }
 
-  const matchingInvestigation =
-    investigationData.investigations.find(
-      (item) => {
-        const investigationIncidentId =
-          item.incident?._id ||
-          item.incident;
 
-        return (
-          String(investigationIncidentId) ===
-          String(incidentId)
-        );
+  try {
+    setAnalyzing(true);
+    setError('');
+
+    const token = localStorage.getItem('token');
+
+    const response = await apiFetch(
+      `${API_BASE_URL}/investigations/analyze`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          incidentId: selectedIncident._id
+        })
       }
     );
 
-  setInvestigation(
-    matchingInvestigation || null
-  );
+    const data = await response.json();
 
-} catch (error) {
-  setError(
-    'Unable to connect to the server.'
-  );
-} finally {
-  setLoading(false);
-}
-
-
-};
-
-useEffect(() => {
-fetchInvestigationData();
-}, []);
-
-// Run autonomous incident analysis
-const handleAnalyzeIncident = async () => {
-if (!selectedIncident) {
-return;
-}
-
-
-try {
-  setAnalyzing(true);
-  setError('');
-
-  const token = localStorage.getItem('token');
-
-  const response = await fetch(
-    `${API_BASE_URL}/investigations/analyze`,
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        incidentId: selectedIncident._id
-      })
+    if (!response.ok) {
+      setError(
+        data.message ||
+          'Failed to analyze incident.'
+      );
+      return;
     }
-  );
 
-  const data = await response.json();
+    setInvestigation(data.investigation);
 
-  if (!response.ok) {
+  } catch (error) {
     setError(
-      data.message ||
-        'Failed to analyze incident.'
+      'Unable to connect to the server.'
     );
-    return;
+  } finally {
+    setAnalyzing(false);
   }
+  };
 
-  setInvestigation(data.investigation);
+  const handleOpenResponse = () => {
+    if (!selectedIncident || !investigation) {
+      return;
+    }
 
-} catch (error) {
-  setError(
-    'Unable to connect to the server.'
-  );
-} finally {
-  setAnalyzing(false);
-}
+    sessionStorage.setItem(
+      'selectedIncidentId',
+      selectedIncident._id
+    );
 
+    navigate('/response');
+  };
 
-};
-
-const handleOpenResponse = () => {
-if (!selectedIncident || !investigation) {
-return;
-}
-
-
-sessionStorage.setItem(
-  'selectedIncidentId',
-  selectedIncident._id
-);
-
-navigate('/response');
-
-
-};
-
-if (loading) {
-return ( <div className="investigation-layout">
-
+  if (loading) {
+    return ( <div className="investigation-layout">
 
     <Sidebar />
 
@@ -232,14 +195,12 @@ return ( <div className="investigation-layout">
 
     </main>
 
-  </div>
-);
+    </div>
+    );
+  }
 
-
-}
-
-if (error) {
-return ( <div className="investigation-layout">
+  if (error) {
+  return ( <div className="investigation-layout">
 
 
     <Sidebar />

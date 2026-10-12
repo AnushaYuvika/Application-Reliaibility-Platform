@@ -5,7 +5,7 @@ const ActiveIncidents = ({ incidents }) => {
   const navigate = useNavigate();
 
   const activeIncidents = incidents.filter(
-    (incident) => incident.status === 'active'
+    (incident) => incident.status !== 'resolved'
   );
 
   return (

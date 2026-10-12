@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './ProjectList.css';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from '../../api/api';
+import { selectProject } from '../../utils/selectedProject';
 
 const ProjectList = () => {
   const navigate = useNavigate();
@@ -89,11 +90,7 @@ const ProjectList = () => {
           className="project-card"
           key={project._id}
           onClick={() => {
-            sessionStorage.setItem(
-              'selectedProjectId',
-              project._id
-            );
-
+            selectProject(project._id);
             navigate(`/projects/${project._id}`);
           }}
         >

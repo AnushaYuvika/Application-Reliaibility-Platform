@@ -2,26 +2,47 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Settings.css';
+import API_BASE_URL from '../../api/api';
 
 const Settings = () => {
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
   const [selectedProject, setSelectedProject] = useState(null);
 
-  useEffect(() => {
-    const selectedProjectId =
-      sessionStorage.getItem('selectedProjectId');
+useEffect(() => {
+  const fetchProject = async () => {
+    const projectId = sessionStorage.getItem('selectedProjectId');
 
-    const projects =
-      JSON.parse(sessionStorage.getItem('projects')) || [];
+    if (!projectId) {
+      setSelectedProject(null);
+      setLoading(false);
+      return;
+    }
 
-    const project = projects.find(
-      (item) => item.id === Number(selectedProjectId)
-    );
+    try {
+      const token = localStorage.getItem('token');
 
-    setSelectedProject(project || null);
-  }, []);
+      const response = await fetch(
+        `${API_BASE_URL}/projects/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const data = await response.json();
+
+      setSelectedProject(response.ok ? data.project : null);
+    } catch (error) {
+      setSelectedProject(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProject();
+}, []);
 
   return (
     <div className="settings-layout">
@@ -40,7 +61,7 @@ const Settings = () => {
           </div>
         </header>
         
-        {!selectedProject && (
+        {!loading && !selectedProject && (
           <section className="settings-no-project">
             <div className="settings-no-project-icon">
               ◉
@@ -170,12 +191,12 @@ const Settings = () => {
 
                   <div className="account-item">
                     <span>Email</span>
-                    <strong>admin@example.com</strong>
+                    <strong>{user.email || '—'}</strong>
                   </div>
 
                   <div className="account-item">
                     <span>Role</span>
-                    <strong>Developer</strong>
+                    <strong>{user.role || '—'}</strong>
                   </div>
 
                   <div className="account-item">

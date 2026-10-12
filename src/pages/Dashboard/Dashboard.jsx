@@ -5,93 +5,67 @@ import SystemHealth from '../../components/dashboard/SystemHealth';
 import './Dashboard.css';
 import { useEffect, useState } from 'react';
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const Dashboard = () => {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projects, setProjects] = useState([]);
   const [incidents, setIncidents] = useState([]);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem('token');
+  const fetchDashboardData = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    const headers = { Authorization: `Bearer ${token}` };
 
-        const [projectsResponse, incidentsResponse] =
-          await Promise.all([
-            fetch(`${API_BASE_URL}/projects`, {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            }),
+    // 1. Projects: normal fetch
+    const projectsResponse = await fetch(`${API_BASE_URL}/projects`, { headers });
+    const projectsData = await projectsResponse.json();
 
-            fetch(`${API_BASE_URL}/incidents`, {
-              headers: {
-                Authorization: `Bearer ${token}`
-              }
-            })
-          ]);
+    if (!projectsResponse.ok) {
+      console.error(projectsData.message || 'Failed to fetch projects.');
+      return;
+    }
 
-        const projectsData =
-          await projectsResponse.json();
+    const allProjects = projectsData.projects || [];
+    setProjects(allProjects);
 
-        const incidentsData =
-          await incidentsResponse.json();
+    // 2. Select project
+    const selectedProjectId = sessionStorage.getItem('selectedProjectId');
 
-        if (!projectsResponse.ok) {
-          console.error(
-            projectsData.message ||
-            'Failed to fetch projects.'
-          );
-          return;
-        }
+    let project = null;
 
-        if (!incidentsResponse.ok) {
-          console.error(
-            incidentsData.message ||
-            'Failed to fetch incidents.'
-          );
-          return;
-        }
+    if (selectedProjectId) {
+      project = allProjects.find(
+        (item) => String(item._id) === String(selectedProjectId)
+      );
+    }
 
-        setProjects(projectsData.projects || []);
-        setIncidents(incidentsData.incidents || []);
+    if (!project && allProjects.length > 0) {
+      project = allProjects[0];
+      sessionStorage.setItem('selectedProjectId', project._id);
+      sessionStorage.removeItem('selectedIncidentId');
+    }
 
-        const selectedProjectId =
-          sessionStorage.getItem('selectedProjectId');
+    setSelectedProject(project || null);
 
-        let project = null;
+    // 3. Incidents: apiFetch (adds demo data for new projects)
+    const incidentsResponse = await apiFetch(`${API_BASE_URL}/incidents`, { headers });
+    const incidentsData = await incidentsResponse.json();
 
-        if (selectedProjectId) {
-          project = projectsData.projects.find(
-            (item) =>
-              String(item._id) ===
-              String(selectedProjectId)
-          );
-        }
+    if (!incidentsResponse.ok) {
+      console.error(incidentsData.message || 'Failed to fetch incidents.');
+      return;
+    }
 
-        if (!project && projectsData.projects.length > 0) {
-          project = projectsData.projects[0];
+    setIncidents(incidentsData.incidents || []);
 
-          sessionStorage.setItem(
-            'selectedProjectId',
-            project._id
-          );
-        }
-
-        setSelectedProject(project || null);
-
-      } catch (error) {
-        console.error(
-          'Unable to connect to the server.'
-        );
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
+  } catch (error) {
+    console.error('Unable to connect to the server.');
+  }
+};
 
   const activeIncidents = incidents.filter(
-    (incident) => incident.status === 'active'
+    (incident) => incident.status !== 'resolved'
   );
 
   return (

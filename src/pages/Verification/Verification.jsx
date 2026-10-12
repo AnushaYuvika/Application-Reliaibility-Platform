@@ -6,6 +6,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import './Verification.css';
 
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const Verification = () => {
   const navigate = useNavigate();
@@ -36,164 +37,91 @@ const Verification = () => {
       setLoading(true);
       setError('');
 
-      const token =
-        localStorage.getItem('token');
+      const token = localStorage.getItem('token');
+      const projectId = sessionStorage.getItem('selectedProjectId');
+      const incidentId = sessionStorage.getItem('selectedIncidentId');
 
-      const projectId =
-        sessionStorage.getItem(
-          'selectedProjectId'
-        );
-
-      const incidentId =
-        sessionStorage.getItem(
-          'selectedIncidentId'
-        );
-
-      if (!projectId || !incidentId) {
-        setLoading(false);
+      if (!projectId) {
+        setSelectedProject(null);
+        setSelectedIncident(null);
         return;
       }
 
-      // Fetch project
-      const projectResponse =
-        await fetch(
-          `${API_BASE_URL}/projects/${projectId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-      const projectData =
-        await projectResponse.json();
+      const projectResponse = await fetch(
+        `${API_BASE_URL}/projects/${projectId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const projectData = await projectResponse.json();
 
       if (!projectResponse.ok) {
-        setError(
-          projectData.message ||
-            'Failed to fetch project.'
-        );
+        setError(projectData.message || 'Failed to fetch project.');
+        return;
+      }
+      setSelectedProject(projectData.project);
+
+      if (!incidentId) {
+        setSelectedIncident(null);
         return;
       }
 
-      setSelectedProject(
-        projectData.project
+      const incidentResponse = await apiFetch(
+        `${API_BASE_URL}/incidents/${incidentId}`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // Fetch incident
-      const incidentResponse =
-        await fetch(
-          `${API_BASE_URL}/incidents/${incidentId}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-      const incidentData =
-        await incidentResponse.json();
+      const incidentData = await incidentResponse.json();
 
       if (!incidentResponse.ok) {
-        setError(
-          incidentData.message ||
-            'Failed to fetch incident.'
-        );
+        setError(incidentData.message || 'Failed to fetch incident.');
         return;
       }
 
-      setSelectedIncident(
-        incidentData.incident
+      const incidentProjectId =
+        incidentData.incident.project?._id || incidentData.incident.project;
+
+      if (String(incidentProjectId) !== String(projectId)) {
+        sessionStorage.removeItem('selectedIncidentId');
+        setSelectedIncident(null);
+        return;
+      }
+      setSelectedIncident(incidentData.incident);
+
+      const responseResponse = await apiFetch(
+        `${API_BASE_URL}/responses`,
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      // Fetch responses
-      const responseResponse =
-        await fetch(
-          `${API_BASE_URL}/responses`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-      const responseData =
-        await responseResponse.json();
+      const responseData = await responseResponse.json();
 
       if (!responseResponse.ok) {
-        setError(
-          responseData.message ||
-            'Failed to fetch response.'
-        );
+        setError(responseData.message || 'Failed to fetch response.');
         return;
       }
 
-      const matchingResponse =
-        responseData.responses.find(
-          (item) => {
-            const itemIncidentId =
-              item.incident?._id ||
-              item.incident;
-
-            return (
-              String(itemIncidentId) ===
-              String(incidentId)
-            );
-          }
-        );
-
-      setResponse(
-        matchingResponse || null
+      const matchingResponse = responseData.responses.find(
+        (item) =>
+          String(item.incident?._id || item.incident) === String(incidentId)
       );
+      setResponse(matchingResponse || null);
 
-      // Fetch verifications
-      const verificationResponse =
-        await fetch(
-          `${API_BASE_URL}/verifications`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-      const verificationData =
-        await verificationResponse.json();
+      const verificationResponse = await apiFetch(
+        `${API_BASE_URL}/verifications`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const verificationData = await verificationResponse.json();
 
       if (!verificationResponse.ok) {
-        setError(
-          verificationData.message ||
-            'Failed to fetch verification.'
-        );
+        setError(verificationData.message || 'Failed to fetch verification.');
         return;
       }
 
-      const incidentVerifications =
-        verificationData.verifications.filter(
-          (item) => {
-            const itemIncidentId =
-              item.incident?._id ||
-              item.incident;
-
-            return (
-              String(itemIncidentId) ===
-              String(incidentId)
-            );
-          }
-        );
-
       setVerifications(
-        incidentVerifications
+        verificationData.verifications.filter(
+          (item) =>
+            String(item.incident?._id || item.incident) === String(incidentId)
+        )
       );
 
     } catch (error) {
-      setError(
-        'Unable to connect to the server.'
-      );
+      setError('Unable to connect to the server.');
     } finally {
       setLoading(false);
     }
@@ -227,7 +155,7 @@ const Verification = () => {
         localStorage.getItem('token');
 
       const verificationResponse =
-        await fetch(
+        await apiFetch(
           `${API_BASE_URL}/verifications`,
           {
             method: 'POST',

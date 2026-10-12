@@ -5,6 +5,7 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import './IncidentDetails.css';
 
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const IncidentDetails = () => {
 
@@ -26,7 +27,7 @@ const IncidentDetails = () => {
         const token = localStorage.getItem('token');
 
         // Fetch incident
-        const incidentResponse = await fetch(
+        const incidentResponse = await apiFetch(
           `${API_BASE_URL}/incidents/${id}`,
           {
             method: 'GET',

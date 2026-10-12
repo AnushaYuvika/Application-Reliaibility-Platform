@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './LogViewer.css';
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const LogViewer = ({ project }) => {
   const [logs, setLogs] = useState([]);
@@ -22,7 +23,7 @@ const LogViewer = ({ project }) => {
 
         const token = localStorage.getItem('token');
 
-        const response = await fetch(
+        const response = await apiFetch(
           `${API_BASE_URL}/logs?project=${project._id}&level=${level}`,
           {
             method: 'GET',

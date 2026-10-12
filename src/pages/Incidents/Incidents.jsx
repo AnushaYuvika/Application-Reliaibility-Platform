@@ -5,8 +5,10 @@ import Sidebar from '../../components/dashboard/Sidebar';
 import ActiveIncidents from '../../components/incidents/ActiveIncidents';
 import ResolvedIncidents from '../../components/incidents/ResolvedIncidents';
 import './Incidents.css';
-
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
+
+
 
 const Incidents = () => {
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ const Incidents = () => {
 
         setSelectedProject(projectData.project);
 
-        const incidentsResponse = await fetch(
+        const incidentsResponse = await apiFetch(
           `${API_BASE_URL}/incidents`,
           {
             method: 'GET',

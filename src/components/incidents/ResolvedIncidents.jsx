@@ -39,9 +39,9 @@ const ResolvedIncidents = ({ incidents }) => {
 
             <div
               className="resolved-incident-row"
-              key={incident.id}
+              key={incident._id}
               onClick={() =>
-                navigate(`/incidents/${incident.id}`)
+                navigate(`/incidents/${incident._id}`)
               }
             >
 

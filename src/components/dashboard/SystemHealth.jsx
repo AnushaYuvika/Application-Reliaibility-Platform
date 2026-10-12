@@ -3,7 +3,7 @@ import './SystemHealth.css';
 const SystemHealth = ({ incidents }) => {
 
   const activeIncidents = incidents.filter(
-    (incident) => incident.status === 'active'
+    (incident) => incident.status !== 'resolved'
   );
 
   const criticalIncidents = activeIncidents.filter(

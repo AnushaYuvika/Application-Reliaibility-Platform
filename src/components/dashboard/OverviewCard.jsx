@@ -6,7 +6,7 @@ const OverviewCard = ({
 }) => {
 
   const activeIncidents = incidents.filter(
-    (incident) => incident.status === 'active'
+    (incident) => incident.status !== 'resolved'
   );
 
   const resolvedIncidents = incidents.filter(

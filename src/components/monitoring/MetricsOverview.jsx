@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './MetricsOverview.css';
 import API_BASE_URL from '../../api/api';
+import apiFetch from '../../api/apiFetch';
 
 const MetricsOverview = ({ project }) => {
   const [metric, setMetric] = useState(null);
@@ -21,7 +22,7 @@ const MetricsOverview = ({ project }) => {
 
         const token = localStorage.getItem('token');
 
-        const response = await fetch(
+        const response = await apiFetch(
           `${API_BASE_URL}/metrics/latest?project=${project._id}`,
           {
             method: 'GET',

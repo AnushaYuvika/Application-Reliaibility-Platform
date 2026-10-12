@@ -9,7 +9,7 @@ const Remediation = ({ response }) => {
   const remediationSteps =
     Array.isArray(remediation)
       ? remediation
-      : [remediation];
+      : String(remediation).split('\n').filter(Boolean);
 
   return (
     <section className="remediation-section">
